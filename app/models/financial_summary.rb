@@ -1,25 +1,33 @@
 class FinancialSummary
+  include ActiveModel::Model
   attr_accessor :user_id, :currency, :date_range, :created_at
 
   def self.one_day(params)
-    summary = new
-    summary.summary_builder(summary, params)
-    summary.date_range = (Time.now - 1)...Time.now
-    summary if summary.valid_fields?(summary)
+    date_range = (Time.now - 1.day)...Time.now
+    self.create_summary(params, date_range)
   end
 
   def self.seven_days(params)
-    summary = new
-    summary.summary_builder(summary, params)
-    summary.date_range = (Time.now - 7.days)...Time.now
-    summary if summary.valid_fields?(summary)
+    date_range = (Time.now - 7.days)...Time.now
+    self.create_summary(params, date_range)
   end
 
   def self.lifetime(params)
-    summary = new
-    summary.summary_builder(summary, params)
-    summary.date_range = (Time.now - 100.years)...Time.now
-    summary if summary.valid_fields?(summary)
+    date_range = (Time.now - 100.years)...Time.now
+    self.create_summary(params, date_range)
+  end
+
+  def self.create_summary(params, date_range)
+    begin
+      FinancialSummary.new(
+        user_id: params[:user][:id],
+        currency: params[:currency].to_s.upcase,
+        created_at: Time.now,
+        date_range: date_range
+      )
+    rescue
+      raise 'Fields must not be blank'
+    end
   end
 
   def count(category)
@@ -33,15 +41,5 @@ class FinancialSummary
       total += t.amount
     end
     total
-  end
-
-  def summary_builder(summary, params)
-    summary.user_id = params[:user].id if params[:user]
-    summary.currency = params[:currency].to_s.upcase if params[:currency]
-    summary.created_at = Time.now
-  end
-
-  def valid_fields?(summary)
-    summary.user_id && summary.currency && summary.date_range && summary.created_at
   end
 end

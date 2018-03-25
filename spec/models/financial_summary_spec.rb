@@ -86,7 +86,7 @@ describe FinancialSummary do
       create(:transaction, user: user, category: :deposit)
     end
 
-    expect(FinancialSummary.one_day(currency: :usd)).to be_nil
-    expect(FinancialSummary.one_day(user: user, currency: :usd)).not_to be_nil
+    expect{ FinancialSummary.one_day(currency: :usd) }.to raise_error('Fields must not be blank')
+    expect { FinancialSummary.one_day(user: user, currency: :usd) }.not_to raise_error
   end
 end
