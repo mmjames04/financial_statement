@@ -11,14 +11,14 @@ class FinancialSummary
   def self.seven_days(params)
     summary = new
     summary.summary_builder(summary, params)
-    summary.date_range = (Date.today - 7)...Date.today
+    summary.date_range = (Time.now - 7.days)...Time.now
     summary if summary.valid_fields?(summary)
   end
 
   def self.lifetime(params)
     summary = new
     summary.summary_builder(summary, params)
-    summary.date_range = (Date.today - 100.years)...Date.today
+    summary.date_range = (Time.now - 100.years)...Time.now
     summary if summary.valid_fields?(summary)
   end
 
